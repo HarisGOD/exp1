@@ -2,6 +2,7 @@ package com.reactive.experimental.controller;
 
 import com.reactive.experimental.DatabaseService.WordService;
 import com.reactive.experimental.units.Word;
+import io.r2dbc.spi.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -19,7 +20,8 @@ import java.util.stream.Stream;
 @RestController
 @RequestMapping("/service/words")
 public class MainController {
-    private final WordService wordService;
+
+    private WordService wordService = null;
     @Autowired
     public MainController(WordService wordService) {
         this.wordService = wordService;
@@ -32,6 +34,18 @@ public class MainController {
     {
         return wordService.list();
     }
+
+    @GetMapping("/getById/{id}")
+    public Mono<Word> getOneById(@PathVariable(value = "id") String Id)
+    {return wordService.getOneById(Long.valueOf(Id));}
+
+    @GetMapping("/getAllById/{id}")
+    public Flux<Word> getAllById(@PathVariable(value = "id") String Id)
+    {return wordService.getAllById(Long.valueOf(Id));}
+
+    @GetMapping("/getAllByIdList")
+    public Flux<Word> getAllByIdList(@RequestParam(defaultValue = "[0]") List<Integer> IdList)
+    {return wordService.getAllById(IdList.stream().map(Int -> {return Long.valueOf(Int+"");}).toList());}
 
     @PostMapping("/add")
     public Mono<Word> add(@RequestBody Word word){
@@ -65,20 +79,5 @@ public class MainController {
         List<Long> range = LongStream.range(start, end+1).boxed().toList();
         return wordService.removeAllByIdList(range);
     }
-    // Добавил слова из тхт-шника
-    @GetMapping("SuperSecret")
-    public Flux<Word> adder(){
-        try {
-            List<String> content = Files.readAllLines(Paths.get("D:\\jdk\\projects\\experimental\\src\\main\\resources\\data\\words.txt"));
-            Stream<Word> ab = content.stream().map(string -> {
-                Word word = new Word(string);
-                return word;
-            });
-            return wordService.addAll(ab.toList());
-        }
-        catch (Exception e){
-            System.out.println(e);
-        }
-        return Flux.empty();
-    }
+
 }
