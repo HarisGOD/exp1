@@ -5,8 +5,13 @@ import org.springframework.data.annotation.Id;
 public class Word {
     @Override
     public String toString(){
-        return "["+this.id+" | "+this.name+"]";
+        //{"name":"SHIT","id":0}
+        return "{\"name\":\""+this.name+"\",\"id\":"+this.id+"}";
     };
+    @Override
+    public boolean equals(Object Eq){
+        return this.toString() == Eq.toString();
+    }
     private String name;
     @Id
     private Long id;

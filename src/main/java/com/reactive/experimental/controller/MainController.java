@@ -21,6 +21,8 @@ import java.util.stream.Stream;
 @RequestMapping("/service/words")
 public class MainController {
 
+
+
     private WordService wordService = null;
     @Autowired
     public MainController(WordService wordService) {
@@ -34,6 +36,8 @@ public class MainController {
     {
         return wordService.list();
     }
+
+
 
     @GetMapping("/getById/{id}")
     public Mono<Word> getOneById(@PathVariable(value = "id") String Id)
@@ -51,6 +55,8 @@ public class MainController {
     public Mono<Word> add(@RequestBody Word word){
         return wordService.addOne(word);
     }
+
+
 
 
     // DELETING
